@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+using BTD_Mod_Helper.Api;
 using HarmonyLib;
 using Il2CppAssets.Scripts.Models.Towers.Upgrades;
+using Il2CppAssets.Scripts.Simulation.GeraldoItems;
 using Il2CppAssets.Scripts.Simulation.Input;
 using Il2CppAssets.Scripts.Simulation.Objects;
 using Il2CppAssets.Scripts.Simulation.Towers;
@@ -234,5 +236,19 @@ internal static class AnalyticsTrackerSim_OnTowerUpgraded
         var tier = tiers[pathUpgraded];
 
         return tier < 6;
+    }
+}
+
+/// <summary>
+/// Don't want to carry over any Paths++ upgrades to the new Super Monkey lol
+/// </summary>
+[HarmonyPatch(typeof(GeraldoChangeTowerBehavior), nameof(GeraldoChangeTowerBehavior.Activate))]
+internal static class GeraldoChangeTowerBehavior_Activate
+{
+    [HarmonyPrefix]
+    internal static void Prefix(GeraldoChangeTowerBehavior __instance)
+    {
+        __instance.mutatorBanList = __instance.mutatorBanList
+            .Concat(ModContent.GetContent<PathPlusPlus>().Select(path => path.Id)).Distinct().ToArray();
     }
 }

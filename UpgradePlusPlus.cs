@@ -253,6 +253,6 @@ public abstract class UpgradePlusPlus : NamedModContent
 /// <inheritdoc />
 public abstract class UpgradePlusPlus<T> : UpgradePlusPlus where T : PathPlusPlus
 {
-    /// <inheritdoc />
+    /// <inheritdoc /> TODO change this type to T when there are enough breaking changes for Mods already happening
     public sealed override PathPlusPlus Path => GetInstance<T>();
 }

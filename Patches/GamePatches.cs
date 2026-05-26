@@ -1,40 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using BTD_Mod_Helper.Api;
 using BTD_Mod_Helper.Extensions;
 using HarmonyLib;
 using Il2CppAssets.Scripts;
-using Il2CppAssets.Scripts.Models;
 using Il2CppAssets.Scripts.Models.Towers;
-using Il2CppAssets.Scripts.Models.Towers.Behaviors;
 using Il2CppAssets.Scripts.Models.Towers.Upgrades;
+using Il2CppAssets.Scripts.Simulation.GeraldoItems;
 using Il2CppAssets.Scripts.Simulation.Towers;
 using Il2CppAssets.Scripts.Unity.Bridge;
 using Il2CppAssets.Scripts.Unity.UI_New.InGame.TowerSelectionMenu;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 namespace PathsPlusPlus.Patches;
-
-/// <summary>
-/// Hijack our RateSupportMutators into mutators that apply the upgrades
-/// </summary>
-[HarmonyPatch(typeof(RateSupportModel.RateSupportMutator), nameof(RateSupportModel.RateSupportMutator.Mutate))]
-internal static class RateMutator_Mutate
-{
-    [HarmonyPrefix]
-    private static bool Prefix(RateSupportModel.RateSupportMutator __instance, Model model, ref bool __result)
-    {
-        if (!PathsPlusPlusMod.PathsById.TryGetValue(__instance.id, out var path)) return true;
-
-        var tower = model.Cast<TowerModel>();
-        var tier = Convert.ToInt32(__instance.multiplier);
-
-        path.Apply(tower, tier);
-
-        __result = true;
-        return false;
-    }
-}
 
 /// <summary>
 /// Handle performing our custom upgrade action instead of standard behavior

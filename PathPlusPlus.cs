@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using BTD_Mod_Helper;
 using BTD_Mod_Helper.Api;
+using BTD_Mod_Helper.Api.Testing;
 using BTD_Mod_Helper.Api.Towers;
 using BTD_Mod_Helper.Extensions;
 using HarmonyLib;
 using Il2CppAssets.Scripts.Models;
 using Il2CppAssets.Scripts.Models.Towers;
-using Il2CppAssets.Scripts.Models.Towers.Behaviors;
+using Il2CppAssets.Scripts.Simulation.Objects;
 using Il2CppAssets.Scripts.Simulation.Towers;
 using Il2CppAssets.Scripts.Unity;
 
@@ -17,7 +18,7 @@ namespace PathsPlusPlus;
 /// <summary>
 /// Class to register your path, defining what tower its for and how many upgrades you're adding
 /// </summary>
-public abstract class PathPlusPlus : NamedModContent
+public abstract class PathPlusPlus : NamedModContent, IHasDefaultTest
 {
     /// <inheritdoc />
     protected sealed override float RegistrationPriority => 11;
@@ -89,6 +90,9 @@ public abstract class PathPlusPlus : NamedModContent
     /// </summary>
     public virtual bool UseUpgradedTowerModels => false;
 
+    /// <inheritdoc />
+    public virtual bool UseDefaultTest => true;
+
     /// <summary>
     /// Ensure that either Ultimate Crosspathing is being used, or that the tiers have at most 1 total path upgraded
     /// past tier 2, and at most 2 total paths upgraded past tier 0.
@@ -141,6 +145,18 @@ public abstract class PathPlusPlus : NamedModContent
     }
 
     /// <summary>
+    /// The PathPlusPlusMutator for this path
+    /// </summary>
+    public PathPlusPlusMutator Mutator => field ??= new PathPlusPlusMutator(this);
+
+    /// <inheritdoc />
+    public override IEnumerable<ModContent> Load()
+    {
+        yield return this;
+        yield return Mutator;
+    }
+
+    /// <summary>
     /// Runs in game when one of the Upgrades of this path is first applied to a tower
     /// </summary>
     /// <param name="tower">The tower receiving the upgrade</param>
@@ -162,7 +178,7 @@ public abstract class PathPlusPlus : NamedModContent
     /// <summary>
     /// The Priority given to the PathPlusPlus mutator on the tower
     /// </summary>
-    protected virtual int Priority => 100 - Order;
+    public virtual int Priority => 100 - Order;
 
     /// <summary>
     /// Applies all upgrades for this path up through the given tier on a TowerModel.
@@ -171,7 +187,7 @@ public abstract class PathPlusPlus : NamedModContent
     /// <param name="tier">Up to and including this tier number</param>
     public void Apply(TowerModel tower, int tier)
     {
-        if (tower.isParagon) return; // TODO check with Honorary Paragons
+        if (tower.isParagon || tower.baseId != Tower) return;
 
         tower.tier = Math.Max(tower.tier, Math.Min(5, tier));
         var appliedUpgrades = tower.appliedUpgrades.ToList();
@@ -229,7 +245,7 @@ public abstract class PathPlusPlus : NamedModContent
     public virtual int GetTier(Tower tower)
     {
         var mutator = GetMutator(tower);
-        return mutator == null ? 0 : Convert.ToInt32(mutator.multiplier);
+        return mutator == null ? 0 : Mutator.Tier(mutator);
     }
 
     /// <summary>
@@ -239,8 +255,7 @@ public abstract class PathPlusPlus : NamedModContent
     /// options for the same path index.
     /// </summary>
     /// <returns>mutator, or null if not present</returns>
-    public RateSupportModel.RateSupportMutator? GetMutator(Tower tower) =>
-        tower.GetMutatorById(Id)?.mutator?.TryCast<RateSupportModel.RateSupportMutator>();
+    public BehaviorMutator? GetMutator(Tower tower) => tower.GetMutatorById(Id)?.mutator;
 
     /// <summary>
     /// Sets the tier for a given PathPlusPlus number to be a particular value.
@@ -252,10 +267,7 @@ public abstract class PathPlusPlus : NamedModContent
     public void SetTier(Tower tower, int tier, bool onUpgrade = false)
     {
         tower.RemoveMutatorsById(Id);
-        tower.AddMutator(new RateSupportModel.RateSupportMutator(true, Id, tier, Priority, null)
-        {
-            cantBeAbsorbed = true
-        });
+        tower.AddMutator(Mutator.Create(tier));
 
         for (var i = 0; i < tier; i++)
         {
@@ -377,6 +389,8 @@ public abstract class PathPlusPlus : NamedModContent
         {
             if (p.GetTier(tower) > 0) return p; // If tier already set, always choose the path
         }
+
+        paths = paths.Where(p => p.StartTier >= tier - 1).ToArray();
 
         foreach (var p in paths)
         {
