@@ -252,3 +252,13 @@ internal static class GeraldoChangeTowerBehavior_Activate
             .Concat(ModContent.GetContent<PathPlusPlus>().Select(path => path.Id)).Distinct().ToArray();
     }
 }
+
+[HarmonyPatch(typeof(RotateToDefaultPositionTower), nameof(RotateToDefaultPositionTower.OnUpgraded))]
+internal static class RotateToDefaultPositionTower_OnUpgraded
+{
+    [HarmonyPrefix]
+    internal static bool Prefix(int pathUpgraded)
+    {
+        return pathUpgraded < 3;
+    }
+}

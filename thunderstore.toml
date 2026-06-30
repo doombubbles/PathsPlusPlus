@@ -1,0 +1,31 @@
+[package]
+name = "PathsPlusPlus"
+namespace = "doombubbles"
+description = "A helper mod allowing additional upgrade paths and tiers to be made for towers."
+websiteUrl = "https://github.com/doombubbles/PathsPlusPlus"
+
+[package.dependencies]
+LavaGang-MelonLoader = "0.7.3"
+doombubbles-Btd6ModHelper = "3.6.5"
+
+[build]
+icon = "./Icon.png"
+readme = "./README.md"
+outdir = "bin"
+
+[[build.copy]]
+source = "./bin/Release/PathsPlusPlus.dll"
+target = "PathsPlusPlus.dll"
+
+[[build.copy]]
+source = "./CHANGELOG.md"
+target = "./CHANGELOG.md"
+
+[[build.copy]]
+source = "./LICENSE"
+target = "./LICENSE"
+
+[publish]
+repository = "https://thunderstore.io"
+communities = ["bloons-td-6"]
+categories = ["mods", "libraries"]

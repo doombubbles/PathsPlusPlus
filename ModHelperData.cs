@@ -12,5 +12,6 @@ internal static class ModHelperData
                                       "Toggling off Balanced Mode can also function well with Ultimate Crosspathing (assuming the Mod Creators were keeping it in mind while coding).";
 
     public const string RepoOwner = "doombubbles";
-    public const string RepoName = "paths-plus-plus";
+    public const string PrevRepoName = "paths-plus-plus";
+    public const string RepoName = "PathsPlusPlus";
 }
