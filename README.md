@@ -10,7 +10,7 @@ Paths++
 
 A helper mod allowing additional upgrade paths to be made for towers.
 
-Toggle "Balanced Mode" to switch from being still only able get up to 5 upgrades in any one path and 2 in another, vs getting all vanilla upgrades you normally can as well as any/all available Paths++ upgrades.
+Toggle "Balanced Mode" to switch from being still only able to get up to 5 upgrades in any one path and 2 in another, vs getting all vanilla upgrades you normally can as well as any/all available Paths++ upgrades.
 
 Toggling off Balanced Mode can also function well with Ultimate Crosspathing, allowing you to get 5/5/5/5/... towers (assuming the Mod Creators were keeping it in mind while coding).
 
@@ -37,6 +37,57 @@ Toggling off Balanced Mode can also function well with Ultimate Crosspathing, al
 ## For Modders: Creating your own Path++ mod
 
 ### Reference Paths++ in your mod
+
+Add Paths++ as a dependency for your mod within your csproj, which can be done by adding this to your main PropertyGroup:
+
+```csproj
+<Dependencies>PathsPlusPlus</Dependencies>
+```
+
+Doing this will make sure the PathsPlusPlus dll is referenced properly by your csproj from your Mods folder.
+
+<details>
+<summary>Full .csproj example</summary>
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>MirrorUniversePaths</RootNamespace>
+    <Configurations>Debug;Release</Configurations>
+    <Nullable>enable</Nullable>
+    <AssemblyName>MirrorUniversePaths</AssemblyName>
+    <LangVersion>preview</LangVersion>
+    <Optimize>False</Optimize>
+    <DebugType>embedded</DebugType>
+    <Dependencies>PathsPlusPlus</Dependencies> <!--Added here-->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include=".github\workflows\build.yml"/>
+  </ItemGroup>
+
+  <Import Project="..\btd6.targets"/>
+</Project>
+```
+
+</details>
+
+You should also list Paths++ as a dependency in your ModHelperData, that will look something like this
+
+```cs
+public static class ModHelperData
+{
+    /* ... */
+        
+    public const string Dependencies = "doombubbles/PathsPlusPlus";
+}
+```
+
+Doing this will also make your GitHub actions workflow download Paths++ automatically when building.
+
+<details>
+<summary>Old Instructions</summary>
 
 The easiest way to reference the PathsPlusPlus dll is to put the following within your .csproj file (BELOW where you import `btd6.targets`)
 
@@ -80,24 +131,23 @@ The easiest way to reference the PathsPlusPlus dll is to put the following withi
 <details>
 <summary>GitHub Actions</summary>
 
-To download PathsPlusPlus within GitHub actions, add the following step: 
+To download PathsPlusPlus within GitHub actions, add the following step:
 
 ```yaml
-pl
+- name: Download PathsPlusPlus
+  uses: dawidd6/action-download-artifact@v6
+  with:
+    github_token: ${{ secrets.GITHUB_TOKEN }}
+    workflow: build.yml
+    branch: main
+    name: PathsPlusPlus.dll
+    repo: doombubbles/paths-plus-plus
+    path: ${{ env.BLOONSTD6 }}/Mods/
 ```
 
 </details>
 
-You should also list Paths++ as a dependency in your ModHelperData, that will look something like this
-
-```cs
-public static class ModHelperData
-{
-    /* ... */
-        
-    public const string Dependencies = "doombubbles/paths-plus-plus";
-}
-```
+</details>
 
 ### Create your PathPlusPlus
 
@@ -115,7 +165,7 @@ Similarly to `ModTowers` from Mod Helper, your `UpgradeCount` should reflect how
 
 ### Extending a Vanilla Path
 
-If you instead want to add additional upgrades to a vanilla path, create your `PathPlusPlus` with an override for the `ExtendsVanillaPath` property like so.
+If you instead want to add additional upgrades to a vanilla path, create your `PathPlusPlus` with an override for the `ExtendVanillaPath` property like so.
 
 ```csharp
 public class DartMonkeyTopPath : PathPlusPlus
@@ -166,7 +216,7 @@ Additionally, the `UpgradePlusPlus` class contains some extra sprites that would
 
 ### Upgrade effects
 
-When implementing `ApplyUpgrade` code, it's important for you to try to make as few assumptions as possible in order to increase compatability and prevent bugs with other paths.
+When implementing `ApplyUpgrade` code, it's important for you to try to make as few assumptions as possible in order to increase compatibility and prevent bugs with other paths.
 
 Whenever you can, use `model.GetDescendants<T>()` to easily affect all instances of a given type anywhere nested within the model.
 
@@ -174,7 +224,7 @@ For modifying something specific, retrieve it by name if possible rather than ju
 
 ### Applying to Multiple Towers
 
-You can use the `MultiPathPlusPlus` and `MultiUpdatePlusPlus` classes for making paths that apply to multiple towers.
+You can use the `MultiPathPlusPlus` and `MultiUpgradePlusPlus` classes for making paths that apply to multiple towers.
 
 Apart from overriding `Towers` instead of `Tower`, usage will be the same
 

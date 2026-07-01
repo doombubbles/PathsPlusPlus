@@ -70,6 +70,7 @@ internal class UpgradeScreenPlusPlus(IntPtr ptr) : MonoBehaviour(ptr)
             if (!allExtendedPaths.TryGetValue(p, out var paths)) continue;
 
             if (PathsPlusPlusMod.DefaultExtendedPaths.TryGetValue(towerId, out var defaults) &&
+                defaults.Length == 3 &&
                 defaults[p] is { } d &&
                 PathsPlusPlusMod.PathsById.ContainsKey(d))
             {

@@ -32,7 +32,9 @@ public static class PathPlusPlusExtensions
     public static int GetTier(this Tower tower, int path) =>
         PathPlusPlus.TryGetPath(tower, path, out var pathPlusPlus) && pathPlusPlus.GetTier(tower) is var tier and >= 0
             ? tier
-            : tower.towerModel.tiers[path];
+            : path < 3
+                ? tower.towerModel.tiers[path]
+                : 0;
 
     /// <summary>
     /// Gets what tier a tower is for a given path

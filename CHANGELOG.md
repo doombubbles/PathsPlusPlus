@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- A few minor bug fixes for edge cases
+
 ## [1.2.2] - 2026-06-03
 
 - Recompiled for BTD6 v55
@@ -78,7 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.6] - 2024-08-01
 
-- For modders, added `MultiPathPlusPlus` and `MultiUpdatePlusPlus` classes for making paths that apply to multiple towers
+- For modders, added `MultiPathPlusPlus` and `MultiUpgradePlusPlus` classes for making paths that apply to multiple towers
   - Apart from overriding `Towers` instead of `Tower`, usage will be the same
 
 ## [1.1.5] - 2024-05-29

@@ -28,7 +28,7 @@ public abstract class MultiPathPlusPlus : PathPlusPlus
     /// <summary>
     /// The generated MultiPathPlusPlus instances for each tower
     /// </summary>
-    public readonly Dictionary<string, MultiPathPlusPlus> PathsByTower = new();
+    public Dictionary<string, MultiPathPlusPlus> PathsByTower { get; private set; } = [];
 
     /// <inheritdoc />
     public override IEnumerable<ModContent> Load() => Towers.Select(t =>
@@ -36,6 +36,7 @@ public abstract class MultiPathPlusPlus : PathPlusPlus
         var path = (MultiPathPlusPlus) Activator.CreateInstance(GetType())!;
         path.tower = t;
         PathsByTower[t] = path;
+        path.PathsByTower = PathsByTower;
         return path;
     });
 
