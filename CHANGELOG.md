@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.3] - 2026-07-01
+
 - A few minor bug fixes for edge cases
 
 ## [1.2.2] - 2026-06-03
@@ -134,7 +136,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial Release
 
-[unreleased]: https://github.com/doombubbles/PathsPlusPlus/compare/1.2.2...HEAD
+[unreleased]: https://github.com/doombubbles/PathsPlusPlus/compare/1.2.3...HEAD
+[1.2.3]: https://github.com/doombubbles/PathsPlusPlus/compare/1.2.2...1.2.3
 [1.2.2]: https://github.com/doombubbles/PathsPlusPlus/compare/1.2.0...1.2.2
 [1.2.0]: https://github.com/doombubbles/PathsPlusPlus/compare/1.1.19...1.2.0
 [1.1.19]: https://github.com/doombubbles/PathsPlusPlus/compare/1.1.18...1.1.19
